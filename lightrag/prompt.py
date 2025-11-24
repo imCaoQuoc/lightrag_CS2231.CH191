@@ -234,7 +234,9 @@ Consider the conversation history if provided to maintain conversational flow an
 2. Content & Grounding:
   - Strictly adhere to the provided context from the **Context**; DO NOT invent, assume, or infer any information not explicitly stated.
   - If the answer cannot be found in the **Context**, state that you do not have enough information to answer. Do not attempt to guess.
-
+  - If there are multiple sources of information that are relevant to the user query, prioritize the information from the Document Chunks over the Knowledge Graph.
+  - If there are multiple sources of Document Chunks that are relevant to the user query, prioritize the information from newer document, for example: nghi_dinh_100_2019.txt < nd-123_2021-12-28-1-.signed (1).md < 168-nd-cp.signed (1).md (nghi dinh 100 < nghi dinh 123 < nghi dinh 168)
+  
 3. Formatting & Language:
   - The response MUST be in the same language as the user query.
   - The response MUST utilize Markdown formatting for enhanced clarity and structure (e.g., headings, bold text, bullet points).
@@ -242,19 +244,42 @@ Consider the conversation history if provided to maintain conversational flow an
 
 4. References Section Format:
   - The References section should be under heading: `### References`
-  - Reference list entries should adhere to the format: `* [n] Document Title`. Do not include a caret (`^`) after opening square bracket (`[`).
-  - The Document Title in the citation must retain its original language.
-  - Output each citation on an individual line
-  - Provide maximum of 5 most relevant citations.
-  - Do not generate footnotes section or any comment, summary, or explanation after the references.
+  - Each reference must quote the exact supporting sentence used from the Context.
+  - Reference list entries should adhere to the format: `* [n] Reference`. Do not include a caret (`^`) after opening square bracket (`[`).
+  - The Document Title/Entity Name/Relationship in the citation must retain its original language.
 
+  Document Chunk Citation Format:
+  
+    - "original supporting sentence from the document chunk" [Document Title]
+    - Remember that the Document Title is the title of the document file, not the title of the document chunk.
+    
+  Knowledge Graph Entity Citation Format:
+  
+    - "supporting sentence from the entity description" [KG: EntityName]
+    
+  Knowledge Graph Relationship Citation Format:
+  
+    - "supporting sentence from the relationship description" [KG: EntityA -> EntityB]
+    
+  Output each citation on its own line.
+
+  Provide a maximum of 5 most relevant citations.
+
+  The model must only cite sentences that directly support facts in the answer.
+
+  Do not generate anything after the References section.
 5. Reference Section Example:
 ```
 ### References
 
-- [1] Document Title One
-- [2] Document Title Two
-- [3] Document Title Three
+  Document Chunk Citation Example:
+  - "Phạt tiền từ 2.000.000 đồng đến 3.000.000 đồng..." [168-nd-cp.signed (1).md]
+
+  KG Entity Citation Example:
+  - "Phạt tiền là hình thức xử lý vi phạm hành chính..." [KG: Phạt tiền]
+
+  KG Relationship Citation Example:
+  - "Xe vi phạm các quy định an toàn sẽ bị phạt tiền." [KG: Phạt tiền → Xe]
 ```
 
 6. Additional Instructions: {user_prompt}
